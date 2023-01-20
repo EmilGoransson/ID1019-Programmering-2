@@ -44,8 +44,8 @@ defmodule Deriv do
   end
 
   def testLn() do
-    e = {:ln, {:exp, {:var, :x}, {:num, 3}}}
-    deriv(e, :x)
+    e = {:ln, {:var, :x}}
+    d = deriv(e, :x)
     IO.write("expression: #{pprint(e)}\n")
     IO.write("derivative: #{pprint(d)}\n")
     IO.write("simplified: #{pprint(simplify(d))}\n")
@@ -230,6 +230,10 @@ defmodule Deriv do
     "#{n}"
   end
 
+  def pprint({:ln, n}) do
+    "ln(#{n})"
+  end
+
   def pprint({:var, v}) do
     "#{v}"
   end
@@ -247,5 +251,15 @@ defmodule Deriv do
       "(#{pprint(e1)})^(#{pprint(e2)})"
     end
 
+  def pprint({:sub, e1, e2}) do
+    "(#{pprint(e1)} - #{pprint(e2)})"
+  end
+
+  def pprint({:div, e1, e2}) do
+    "#{pprint(e1)} / #{pprint(e2)}"
+  end
+  def pprint({:sqrt, e1}) do
+    "(#{pprint(e1)})^(1/2)"
+  end
 
 end
