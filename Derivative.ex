@@ -286,7 +286,7 @@ defmodule Deriv do
   end
 
   def simplify_sqrt({:num, n}) do
-    {:num, n ** 0.5}
+    {:num, :math.sqrt(n)}
   end
 
   def simplify_sqrt(e) do
