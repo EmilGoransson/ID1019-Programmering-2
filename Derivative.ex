@@ -12,6 +12,7 @@ defmodule Deriv do
   | {:ln, expr()}
   | {:sin, expr()}
   | {:cos, expr()}
+  | {:cos, expr()}
   | {:sub, expr(), expr()}
 
   def test1() do
@@ -53,18 +54,28 @@ defmodule Deriv do
 
   def testDiv() do
     e = {:div, {:num, 1} , {:var, :x}}
-    deriv(e, :x)
+    d = deriv(e, :x)
+    IO.write("expression: #{pprint(e)}\n")
+    IO.write("derivative: #{pprint(d)}\n")
+    IO.write("simplified: #{pprint(simplify(d))}\n")
   end
 
   def testSin() do
     e = {:sin, {:mul, {:num, 5}, {:var, :x}}}
-    deriv(e, :x)
+    d=deriv(e, :x)
+    IO.write("expression: #{pprint(e)}\n")
+    IO.write("derivative: #{pprint(d)}\n")
+    IO.write("simplified: #{pprint(simplify(d))}\n")
   end
 
   def testSqrt() do
     e = {:sqrt, {:var, :x}}
-    deriv(e, :x)
+    d=deriv(e, :x)
+    IO.write("expression: #{pprint(e)}\n")
+    IO.write("derivative: #{pprint(d)}\n")
+    IO.write("simplified: #{pprint(simplify(d))}\n")
   end
+
 
   #Derives the function
   def deriv({:num, _}, _) do
@@ -100,7 +111,7 @@ defmodule Deriv do
   end
   #ln(x), works, no corner cases
   def deriv({:ln, e}, v) do
-    {:div, {deriv(e,v)}, e}
+    {:div, deriv(e,v), e}
   end
   #Works! Uses  "kvotregeln" to divide
   def deriv({:div, e1, e2}, v) do
@@ -135,7 +146,21 @@ defmodule Deriv do
   def calc({:exp, e1, e2}, v,n) do
     {:exp, calc(e1, v, n), calc(e2, v, n)}
   end
-
+  def calc({:ln, e1}, v,n) do
+    {:ln, calc(e1, v, n)}
+  end
+  def calc({:div, e1, e2}, v, n) do
+  {:div, calc(e1, v, n), calc(e2, v, n)}
+  end
+  def calc({:sqrt, e}, v, n) do
+  {:sqrt, calc(e, v, n)}
+  end
+  def calc({:sin, e}, v, n) do
+  {:sin, calc(e, v, n)}
+  end
+  def calc({:cos, e}, v, n) do
+  {:cos, calc(e, v, n)}
+  end
 
 
 
@@ -155,8 +180,19 @@ defmodule Deriv do
   def simplify({:div, e1, e2}) do
     simplify_div(simplify(e1), simplify(e2))
   end
+  def simplify({:sin, e}) do
+    simplify_sin(simplify(e))
+  end
+  def simplify({:cos, e}) do
+    simplify_cos(simplify(e))
+  end
+  def simplify({:sqrt, e1}) do
+    simplify_sqrt(simplify(e1))
+  end
+  def simplify({:ln, e1}) do
+    simplify_ln(simplify(e1))
 
-
+  end
   #catch all
   def simplify(e) do
     e
@@ -174,14 +210,14 @@ defmodule Deriv do
   end
 
   #Sub
-  def simplify_sub({:num, 0}, e2) do
-    -e2
+  def simplify_sub({:num, a}, {:num, b}) do
+    {:num, a - b}
   end
-  def simplify_sub(e1, {:num, 0}) do
-    e1
+  def simplify_sub(a, {:num, b}) do
+    {:num, elem(a,1) - b}
   end
-  def simplify_sub({:num, n1}, {:num, n2}) do
-    {:num, n1-n2}
+  def simplify_sub({:num, a}, b) do
+    {:num, a - elem(b,1)}
   end
 
   #Multiplication
@@ -221,18 +257,51 @@ defmodule Deriv do
   def simplify_div(e1, {:num, 1}) do
     e1
   end
+  def simplify_div({:num, n1}, {:num, n2}) do
+    {:num, n1 / n2}
+  end
+  def simplify_div(e1, e2) do
+    {:div, e1, e2}
+  end
 
 
+  def simplify_ln({:num, 1}) do
+    {:num, 0}
+  end
 
+  def simplify_ln({:num, 0})
+  do {:num, 0}
+  end
+
+  def simplify_ln(e) do
+    {:ln, e}
+  end
+
+  def simplify_sin(e) do
+     {:sin, e}
+    end
+
+  def simplify_cos(e) do
+    {:cos, e}
+  end
+
+  def simplify_sqrt({:num, n}) do
+    {:num, n ** 0.5}
+  end
+
+  def simplify_sqrt(e) do
+    {:sqrt, e}
+  end
 
 
   def pprint({:num, n}) do
     "#{n}"
   end
 
-  def pprint({:ln, n}) do
-    "ln(#{n})"
-  end
+  def pprint({:ln, e}) do
+    "ln(#{pprint(e)})"
+   end
+
 
   def pprint({:var, v}) do
     "#{v}"
@@ -251,15 +320,26 @@ defmodule Deriv do
       "(#{pprint(e1)})^(#{pprint(e2)})"
     end
 
-  def pprint({:sub, e1, e2}) do
-    "(#{pprint(e1)} - #{pprint(e2)})"
-  end
+    def pprint({:sub, e1, e2}) do
+      "#{pprint(e1)} - #{pprint(e2)}"
+    end
+
 
   def pprint({:div, e1, e2}) do
-    "#{pprint(e1)} / #{pprint(e2)}"
+    "(#{pprint(e1)})/(#{pprint(e2)})"
+   end
+
+   def pprint({:sin, e}) do
+     "sin(#{pprint(e)})"
+    end
+
+   def pprint({:cos, e}) do
+    "cos(#{pprint(e)})"
   end
+
   def pprint({:sqrt, e1}) do
     "(#{pprint(e1)})^(1/2)"
   end
+
 
 end
