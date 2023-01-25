@@ -94,9 +94,9 @@ defmodule EnvTree do
   def bench(i, n) do
     seq = Enum.map(1..i, fn _ -> :rand.uniform(i) end)
 
-    list =
-      Enum.reduce(seq, EnvList.new(), fn e, list ->
-        EnvList.add(list, e, :foo)
+    tree =
+      Enum.reduce(seq, EnvTree.add(nil, :a, :foo), fn e, tree ->
+        EnvTree.add(tree, e, :foo)
       end)
 
     seq = Enum.map(1..n, fn _ -> :rand.uniform(i) end)
@@ -104,21 +104,21 @@ defmodule EnvTree do
     {add, _} =
       :timer.tc(fn ->
         Enum.each(seq, fn e ->
-          EnvList.add(list, e, :foo)
+          EnvTree.add(tree, e, :foo)
         end)
       end)
 
     {lookup, _} =
       :timer.tc(fn ->
         Enum.each(seq, fn e ->
-          EnvList.lookup(list, e)
+          EnvTree.lookup(tree, e)
         end)
       end)
 
     {remove, _} =
       :timer.tc(fn ->
         Enum.each(seq, fn e ->
-          EnvList.remove(list, e)
+          EnvTree.remove(tree, e)
         end)
       end)
 
