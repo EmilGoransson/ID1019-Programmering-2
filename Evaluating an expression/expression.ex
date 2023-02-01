@@ -12,12 +12,13 @@ defmodule Expression do
           | literal()
 
   def test do
-    exprFinal = {:add, {:add, {:mul, {:num, 2}, {:var, :x}}, {:q, 3, 4}}, {:q, 1, 2}}
+    exprFinal = {:sub, {:add, {:mul, {:num, 2}, {:var, :x}}, {:q, 3, 4}}, {:q, 1, 2}}
 
     exprTest2 = {:add, {:add, {:mul, {:num, 2}, {:var, :x}}, {:num, 3}}, {:q, 1, 2}}
-    exprTest = {:add, {:q, 1, 2}, {:q, 1, 2}}
+
+    exprTest = {:div, {:mul, {:num, 2}, {:var, :y}}, {:add, {:q, 3, 4}, {:q, 1, 2}}}
     env = %{x: 1, y: 2}
-    simplify(eval(exprFinal, env))
+    simplify(eval(exprTest, env))
   end
 
   def eval({:num, n}, _) do
