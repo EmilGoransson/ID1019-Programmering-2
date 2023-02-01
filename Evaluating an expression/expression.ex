@@ -17,7 +17,7 @@ defmodule Expression do
     exprTest2 = {:add, {:add, {:mul, {:num, 2}, {:var, :x}}, {:num, 3}}, {:q, 1, 2}}
     exprTest = {:add, {:q, 1, 2}, {:q, 1, 2}}
     env = %{x: 1, y: 2}
-    fix(eval(exprFinal, env))
+    simplify(eval(exprFinal, env))
   end
 
   def eval({:num, n}, _) do
@@ -110,9 +110,6 @@ defmodule Expression do
 
   def divi(e1, e2) do
     {:q, e1, e2}
-  end
-
-  def simplify({:q, e1, e2}) do
   end
 
   def simplify({:q, e1, e2}) do
