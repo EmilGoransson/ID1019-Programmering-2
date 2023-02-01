@@ -13,8 +13,11 @@ defmodule Expression do
 
   def test do
     exprFinal = {:add, {:add, {:mul, {:num, 2}, {:var, :x}}, {:q, 3, 4}}, {:q, 1, 2}}
-    env = %{x: 5, y: 2}
-    eval(exprFinal, env)
+
+    exprTest2 = {:add, {:add, {:mul, {:num, 2}, {:var, :x}}, {:num, 3}}, {:q, 1, 2}}
+    exprTest = {:add, {:q, 1, 2}, {:q, 1, 2}}
+    env = %{x: 1, y: 2}
+    fix(eval(exprFinal, env))
   end
 
   def eval({:num, n}, _) do
@@ -42,7 +45,7 @@ defmodule Expression do
   end
 
   def eval({:q, e1, e2}, _) do
-    quo(e1, e2)
+    {:q, e1, e2}
   end
 
   def add({:q, e1, e2}, {:q, e3, e4}) do
@@ -50,15 +53,15 @@ defmodule Expression do
   end
 
   def add({:q, e1, e2}, e3) do
-    add({:q, e1, e2}, {:q, e3 * e2, e2})
+    {:q, e1 + e3 * e2, e2}
   end
 
   def add(e1, {:q, e2, e3}) do
-    add({:q, e1 * e3, e3}, {:q, e2, e3})
+    {:q, e1 * e3 + e2, e3}
   end
 
   def add(e1, e2) do
-    e1 + e2
+    {:q, e1 + e2, 1}
   end
 
   def sub({:q, e1, e2}, {:q, e3, e4}) do
@@ -66,15 +69,15 @@ defmodule Expression do
   end
 
   def sub({:q, e1, e2}, e3) do
-    sub({:q, e1, e2}, {:q, e3 * e2, e2})
+    {:q, e1 - e3 * e2, e2}
   end
 
   def sub(e1, {:q, e2, e3}) do
-    add({:q, e1 * e3, e3}, {:q, e2, e3})
+    {:q, e1 * e3 - e2, e3}
   end
 
   def sub(e1, e2) do
-    e1 - e2
+    {:q, e1 - e2, 1}
   end
 
   def mul({:q, e1, e2}, {:q, e3, e4}) do
@@ -90,7 +93,7 @@ defmodule Expression do
   end
 
   def mul(e1, e2) do
-    e1 * e2
+    {:q, e1 * e2, 1}
   end
 
   def divi({:q, e1, e2}, {:q, e3, e4}) do
@@ -106,10 +109,31 @@ defmodule Expression do
   end
 
   def divi(e1, e2) do
-    e1 / e2
+    {:q, e1, e2}
   end
 
-  def quo(e1, e2) do
-    e1 / e2
+  def simplify({:q, e1, e2}) do
+  end
+
+  def simplify({:q, e1, e2}) do
+    gcd = Integer.gcd(e1, e2)
+
+    if(gcd == 1) do
+      pprint({:q, e1, e2})
+    else
+      pprint({:q, e1 / gcd, e2 / gcd})
+    end
+  end
+
+  def pprint({:num, e}) do
+    "#{trunc(e)}"
+  end
+
+  def pprint({:q, e1, 1.0}) do
+    "#{trunc(e1)}"
+  end
+
+  def pprint({:q, e1, e2}) do
+    "#{trunc(e1)}/#{trunc(e2)}"
   end
 end
