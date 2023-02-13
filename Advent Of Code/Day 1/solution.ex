@@ -1,9 +1,6 @@
 defmodule Solution do
   def day1 do
     {:ok, data} = File.read("input.txt")
-    # Import file,read data
-
-    # reformat data
     foo = String.split(data, "\r\n")
 
     foo2 =
@@ -14,6 +11,7 @@ defmodule Solution do
         end
       end)
 
+    ## prints correct solution
     sortedList = Enum.sort(sumList(foo2), &(&1 >= &2))
     solution1 = Enum.at(sortedList, 0)
     solution2 = Enum.at(sortedList, 0) + Enum.at(sortedList, 1) + Enum.at(sortedList, 2)
@@ -21,16 +19,12 @@ defmodule Solution do
     IO.puts(solution2)
   end
 
-  def sumList([]) do
-    IO.puts(:STOP)
-  end
-
   def sumList([h | ["" | t2]]) do
     [h | sumList(t2)]
   end
 
   def sumList([h | [h2 | t2]]) do
-    test([h + h2 | t2])
+    sumList([h + h2 | t2])
   end
 
   def sumList([h | nil]) do
