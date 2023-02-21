@@ -29,7 +29,7 @@ defmodule Carlo do
     a = round(j, r, a)
     t = t + j
     pi = 4 * a / t
-    :io.format(" ... ", [pi, pi - :math.pi()])
+    :io.format("pi = ~14.10f, error = ~14.10f\n", [pi, pi - :math.pi()])
     rounds(k - 1, j, t, r, a)
   end
 end
