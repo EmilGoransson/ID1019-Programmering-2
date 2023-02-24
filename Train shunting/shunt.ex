@@ -20,6 +20,7 @@ defmodule Shunt do
   def few(_, []) do
     []
   end
+
   ## NOT DONE DOESNT WORK!
   def few(xs, [y | ys]) do
     {hs, ts} = Train.split(xs, y)
@@ -32,6 +33,5 @@ defmodule Shunt do
       {:one, -(Enum.count(ts) + 1)},
       {:two, -Enum.count(hs)} | find(Train.append(hs, ts), ys)
     ]
-  end
   end
 end
