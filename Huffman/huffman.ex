@@ -22,32 +22,6 @@ defmodule Huffman do
     to_string(data)
   end
 
-  def bench do
-    file = read("./data.txt")
-
-    t0 = :os.system_time(:millisecond)
-    tree = tree(file)
-    t1 = :os.system_time(:millisecond)
-    tree_t = t1 - t0
-    t0 = :os.system_time(:millisecond)
-    encode = encode_table(tree)
-    t1 = :os.system_time(:millisecond)
-    encode_t = t1 - t0
-    t0 = :os.system_time(:millisecond)
-    seq = encode(file, encode)
-    t1 = :os.system_time(:millisecond)
-    seq_t = t1 - t0
-    t0 = :os.system_time(:millisecond)
-    decode(seq, encode)
-    t1 = :os.system_time(:millisecond)
-    decode_t = t1 - t0
-
-    :io.format(
-      "File size ~w~nComprimized size ~w~nThe time it took to make a tree: ~w~nThe time it took to make encode table: ~w~nThe time it took to encode kallocain: ~w~nThe time it took to decode kallocain: ~w~n",
-      [length(file), div(length(seq), 8), tree_t, encode_t, seq_t, decode_t]
-    )
-  end
-
   def localTest do
     sample = read("data.txt")
     tree(sample)
@@ -172,9 +146,9 @@ defmodule Huffman do
       {char, _} ->
         {char, rest}
 
-      nil ->
-        decode_char(seq, n + 1, table)
-    end
+
+
+
   end
 
   def read(file) do
